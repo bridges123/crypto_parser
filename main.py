@@ -16,7 +16,7 @@ def get_pages_count():
 
 
 def get_data(i):
-    data = []
+    data = {}
     result = requests.get(url=f'{request_url}&page={i}', headers=headers).json()
 
     for wallet in result['data']:
@@ -24,11 +24,10 @@ def get_data(i):
             name = wallet['name']
             price = float(wallet['latest'])
             change = wallet['latest_price']['percent_change']['week'] * 100
-            data.append({
-                'name': name,
+            data[name] = {
                 'price': price,
                 'change': change
-            })
+            }
         except Exception as ex:
             print(f'{name}: {ex}')
 
@@ -40,9 +39,9 @@ def main():
     pages_count = get_pages_count()
     with multiprocessing.Pool(multiprocessing.cpu_count() * 8) as process:
         data = process.map(get_data, [i for i in range(1, pages_count + 1)])
-    full_data = []
-    for elem in data:
-        full_data += elem
+    full_data = data[0]
+    for elem in data[1::]:
+        full_data.update(elem)
 
     with open('crypto_data.json', 'w') as f:
         json.dump(full_data, f, indent=4, ensure_ascii=False)
