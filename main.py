@@ -1,7 +1,6 @@
 import json
 import multiprocessing
 import requests
-from bs4 import BeautifulSoup
 
 request_url = 'https://www.coinbase.com/api/v2/assets/search?base=USD&country=RU&filter=all&include_prices=true&limit=50&order=asc'
 headers = {
